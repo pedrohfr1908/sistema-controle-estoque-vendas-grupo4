@@ -1,0 +1,157 @@
+* {
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #f4f6f9;
+    color: #333;
+}
+
+header {
+    background-color: #1e293b;
+    color: #fff;
+    padding: 1.5rem 2rem;
+}
+
+header h1 {
+    font-size: 1.4rem;
+    margin-bottom: 1rem;
+}
+
+nav {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.nav-btn {
+    background: #334155;
+    border: none;
+    color: #fff;
+    padding: 0.6rem 1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.nav-btn:hover:not(:disabled) {
+    background: #475569;
+}
+
+.nav-btn.active {
+    background: #2563eb;
+    font-weight: bold;
+}
+
+.nav-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+main {
+    max-width: 1050px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.alerta-banner {
+    background-color: #fef3c7;
+    border-left: 4px solid #f59e0b;
+    color: #92400e;
+    padding: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 4px;
+}
+
+.card {
+    background: #fff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+}
+
+h2 {
+    margin-bottom: 1rem;
+    font-size: 1.2rem;
+}
+
+form {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 0.75rem;
+}
+
+input, select {
+    flex: 1;
+    padding: 0.6rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+button[type="submit"] {
+    background: #16a34a;
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.95rem;
+}
+
+th, td {
+    text-align: left;
+    padding: 0.75rem;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+.badge-ok {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.badge-baixo {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.btn-acao {
+    border: none;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    color: #fff;
+    font-size: 0.85rem;
+    margin-right: 0.25rem;
+}
+
+.btn-entrada {
+    background: #2563eb;
+}
+
+.btn-excluir {
+    background: #dc2626;
+}
