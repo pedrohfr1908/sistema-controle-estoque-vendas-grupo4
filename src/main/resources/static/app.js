@@ -1,6 +1,10 @@
 const API_CATEGORIAS = '/api/categorias';
 const API_FORNECEDORES = '/api/fornecedores';
 const API_PRODUTOS = '/api/produtos';
+const API_VENDAS = '/api/vendas';
+
+let produtosDisponiveis = [];
+let carrinho = [];
 
 document.addEventListener('DOMContentLoaded', () => {
     atualizarTudo();
@@ -82,6 +86,7 @@ async function atualizarTudo() {
     await carregarCategorias();
     await carregarFornecedores();
     await carregarProdutos();
+    await carregarVendas();
 }
 
 async function carregarCategorias() {
@@ -140,9 +145,12 @@ async function carregarFornecedores() {
 async function carregarProdutos() {
     const resposta = await fetch(API_PRODUTOS);
     const produtos = await resposta.json();
+    produtosDisponiveis = produtos;
 
     const tbody = document.getElementById('tabela-produtos');
+    const selectPdv = document.getElementById('pdv-produto');
     tbody.innerHTML = '';
+    selectPdv.innerHTML = '<option value="">Selecione um produto...</option>';
     let alertas = 0;
 
     produtos.forEach(p => {
@@ -166,6 +174,13 @@ async function carregarProdutos() {
             </td>
         `;
         tbody.appendChild(tr);
+
+        if (p.quantidadeEstoque > 0) {
+            const opt = document.createElement('option');
+            opt.value = p.id;
+            opt.textContent = `${p.nome} (R$ ${p.precoVenda.toFixed(2)} | Estoque: ${p.quantidadeEstoque})`;
+            selectPdv.appendChild(opt);
+        }
     });
 
     const banner = document.getElementById('alerta-estoque-container');
@@ -175,6 +190,132 @@ async function carregarProdutos() {
     } else {
         banner.style.display = 'none';
     }
+}
+
+function adicionarItemCarrinho() {
+    const produtoId = parseInt(document.getElementById('pdv-produto').value);
+    const quantidade = parseInt(document.getElementById('pdv-qtd').value);
+
+    if (!produtoId || isNaN(quantidade) || quantidade <= 0) {
+        alert('Selecione um produto e informe uma quantidade válida.');
+        return;
+    }
+
+    const produto = produtosDisponiveis.find(p => p.id === produtoId);
+    if (!produto) return;
+
+    const itemExistente = carrinho.find(i => i.produtoId === produtoId);
+    const qtdTotalDesejada = (itemExistente ? itemExistente.quantidade : 0) + quantidade;
+
+    if (qtdTotalDesejada > produto.quantidadeEstoque) {
+        alert(`Quantidade solicitada (${qtdTotalDesejada}) excede o estoque disponível (${produto.quantidadeEstoque}).`);
+        return;
+    }
+
+    if (itemExistente) {
+        itemExistente.quantidade += quantidade;
+    } else {
+        carrinho.push({
+            produtoId: produto.id,
+            nome: produto.nome,
+            precoUnitario: produto.precoVenda,
+            quantidade
+        });
+    }
+
+    renderizarCarrinho();
+}
+
+function removerItemCarrinho(index) {
+    carrinho.splice(index, 1);
+    renderizarCarrinho();
+}
+
+function renderizarCarrinho() {
+    const tbody = document.getElementById('tabela-carrinho');
+    tbody.innerHTML = '';
+    let total = 0;
+
+    carrinho.forEach((item, index) => {
+        const subtotal = item.precoUnitario * item.quantidade;
+        total += subtotal;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${item.nome}</td>
+            <td>${item.quantidade}</td>
+            <td>R$ ${item.precoUnitario.toFixed(2)}</td>
+            <td>R$ ${subtotal.toFixed(2)}</td>
+            <td><button class="btn-acao btn-excluir" onclick="removerItemCarrinho(${index})">Remover</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+
+    document.getElementById('pdv-total-valor').textContent = total.toFixed(2);
+}
+
+async function finalizarVenda() {
+    if (carrinho.length === 0) {
+        alert('Adicione pelo menos um produto ao carrinho antes de finalizar.');
+        return;
+    }
+
+    const formaPagamento = document.getElementById('pdv-forma-pagamento').value;
+    const payload = {
+        formaPagamento,
+        itens: carrinho.map(item => ({
+            produtoId: item.produtoId,
+            quantidade: item.quantidade
+        }))
+    };
+
+    const resposta = await fetch(API_VENDAS, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+
+    if (resposta.ok) {
+        carrinho = [];
+        renderizarCarrinho();
+        alert('Venda registrada e estoque atualizado com sucesso!');
+        await atualizarTudo();
+    } else {
+        alert(await resposta.text());
+    }
+}
+
+async function carregarVendas() {
+    const [respVendas, respResumo] = await Promise.all([
+        fetch(API_VENDAS),
+        fetch(`${API_VENDAS}/resumo`)
+    ]);
+
+    const vendas = await respVendas.json();
+    const resumo = await respResumo.json();
+
+    document.getElementById('resumo-qtd-vendas').textContent = resumo.totalVendas;
+    document.getElementById('resumo-faturamento').textContent = Number(resumo.faturamentoTotal).toFixed(2);
+
+    const tbody = document.getElementById('tabela-vendas');
+    tbody.innerHTML = '';
+
+    vendas.forEach(v => {
+        const itensDescricao = v.itens
+            .map(i => `${i.quantidade}x ${i.produto.nome}`)
+            .join(', ');
+        const dataFormatada = v.dataHora ? new Date(v.dataHora).toLocaleString('pt-BR') : '-';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${v.id}</td>
+            <td>${dataFormatada}</td>
+            <td>${itensDescricao}</td>
+            <td>${v.formaPagamento}</td>
+            <td><strong>R$ ${Number(v.valorTotal).toFixed(2)}</strong></td>
+        `;
+        tbody.appendChild(tr);
+    });
 }
 
 async function registrarEntrada(id) {

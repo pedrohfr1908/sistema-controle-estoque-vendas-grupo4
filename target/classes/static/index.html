@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Estoque e Vendas</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>📦 Sistema de Controle de Estoque e Vendas</h1>
+        <nav>
+            <button id="btn-categorias" class="nav-btn active" onclick="mostrarSecao('categorias')">Categorias</button>
+            <button id="btn-fornecedores" class="nav-btn" onclick="mostrarSecao('fornecedores')">Fornecedores</button>
+            <button id="btn-produtos" class="nav-btn" onclick="mostrarSecao('produtos')">Produtos & Estoque</button>
+            <button id="btn-pdv" class="nav-btn" onclick="mostrarSecao('pdv')">Frente de Caixa (PDV)</button>
+            <button id="btn-vendas" class="nav-btn" onclick="mostrarSecao('vendas')">Histórico de Vendas</button>
+        </nav>
+    </header>
+
+    <main>
+        <div id="alerta-estoque-container" class="alerta-banner" style="display: none;">
+            <strong>⚠️ Alerta de Reposição:</strong> Existem <span id="qtd-alertas">0</span> produto(s) com estoque mínimo ou crítico!
+        </div>
+
+        <!-- SEÇÃO CATEGORIAS (SPRINT 1) -->
+        <section id="sec-categorias" class="card secao">
+            <h2>Gestão de Categorias</h2>
+            <form id="form-categoria">
+                <input type="text" id="cat-nome" placeholder="Nome da categoria (ex: Bebidas)" required>
+                <input type="text" id="cat-desc" placeholder="Descrição breve">
+                <button type="submit">Cadastrar</button>
+            </form>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-categorias"></tbody>
+            </table>
+        </section>
+
+        <!-- SEÇÃO FORNECEDORES (SPRINT 2) -->
+        <section id="sec-fornecedores" class="card secao" style="display: none;">
+            <h2>Gestão de Fornecedores</h2>
+            <form id="form-fornecedor">
+                <input type="text" id="forn-razao" placeholder="Razão Social (ex: Distribuidora Alfa)" required>
+                <input type="text" id="forn-cnpj" placeholder="CNPJ" required>
+                <input type="text" id="forn-tel" placeholder="Telefone">
+                <button type="submit">Cadastrar</button>
+            </form>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Razão Social</th>
+                        <th>CNPJ</th>
+                        <th>Telefone</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-fornecedores"></tbody>
+            </table>
+        </section>
+
+        <!-- SEÇÃO PRODUTOS & ESTOQUE (SPRINT 2) -->
+        <section id="sec-produtos" class="card secao" style="display: none;">
+            <h2>Catálogo de Produtos e Controle de Estoque</h2>
+            <form id="form-produto" class="form-grid">
+                <input type="text" id="prod-nome" placeholder="Nome do produto" required>
+                <input type="number" step="0.01" id="prod-preco" placeholder="Preço de venda (R$)" required>
+                <input type="number" id="prod-qtd" placeholder="Qtd. Inicial" required>
+                <input type="number" id="prod-min" placeholder="Estoque Mínimo" required>
+                <select id="prod-categoria" required>
+                    <option value="">Selecione a Categoria...</option>
+                </select>
+                <select id="prod-fornecedor" required>
+                    <option value="">Selecione o Fornecedor...</option>
+                </select>
+                <button type="submit">Cadastrar Produto</button>
+            </form>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Produto</th>
+                        <th>Categoria</th>
+                        <th>Fornecedor</th>
+                        <th>Preço</th>
+                        <th>Estoque / Mín.</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-produtos"></tbody>
+            </table>
+        </section>
+
+        <!-- SEÇÃO FRENTE DE CAIXA / PDV (SPRINT 3) -->
+        <section id="sec-pdv" class="card secao" style="display: none;">
+            <h2>Frente de Caixa (PDV)</h2>
+            <div class="pdv-adicionar">
+                <select id="pdv-produto">
+                    <option value="">Selecione um produto...</option>
+                </select>
+                <input type="number" id="pdv-qtd" min="1" value="1" placeholder="Qtd.">
+                <button type="button" class="btn-acao btn-entrada" onclick="adicionarItemCarrinho()">Adicionar ao Carrinho</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Qtd.</th>
+                        <th>Preço Unit.</th>
+                        <th>Subtotal</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-carrinho"></tbody>
+            </table>
+
+            <div class="pdv-footer">
+                <div class="pdv-pagamento">
+                    <label for="pdv-forma-pagamento">Forma de Pagamento:</label>
+                    <select id="pdv-forma-pagamento">
+                        <option value="PIX">PIX</option>
+                        <option value="DINHEIRO">Dinheiro</option>
+                        <option value="CARTAO_CREDITO">Cartão de Crédito</option>
+                        <option value="CARTAO_DEBITO">Cartão de Débito</option>
+                    </select>
+                </div>
+                <div class="pdv-total">
+                    Total: <strong>R$ <span id="pdv-total-valor">0.00</span></strong>
+                </div>
+                <button type="button" class="btn-finalizar" onclick="finalizarVenda()">Finalizar Venda</button>
+            </div>
+        </section>
+
+        <!-- SEÇÃO HISTÓRICO DE VENDAS & RESUMO (SPRINT 3) -->
+        <section id="sec-vendas" class="card secao" style="display: none;">
+            <h2>Histórico de Vendas e Resumo de Caixa</h2>
+            <div class="resumo-grid">
+                <div class="resumo-box">
+                    <span>Total de Vendas Realizadas</span>
+                    <strong id="resumo-qtd-vendas">0</strong>
+                </div>
+                <div class="resumo-box">
+                    <span>Faturamento Acumulado</span>
+                    <strong>R$ <span id="resumo-faturamento">0.00</span></strong>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Data/Hora</th>
+                        <th>Itens</th>
+                        <th>Pagamento</th>
+                        <th>Valor Total</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-vendas"></tbody>
+            </table>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

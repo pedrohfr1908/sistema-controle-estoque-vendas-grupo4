@@ -12,7 +12,7 @@
 
     <groupId>com.comercio</groupId>
     <artifactId>estoque</artifactId>
-    <version>0.0.2-SNAPSHOT</version>
+    <version>0.0.3-SNAPSHOT</version>
     <name>Sistema de Controle de Estoque e Vendas</name>
 
     <properties>

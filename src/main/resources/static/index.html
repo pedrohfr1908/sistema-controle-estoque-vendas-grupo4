@@ -13,7 +13,8 @@
             <button id="btn-categorias" class="nav-btn active" onclick="mostrarSecao('categorias')">Categorias</button>
             <button id="btn-fornecedores" class="nav-btn" onclick="mostrarSecao('fornecedores')">Fornecedores</button>
             <button id="btn-produtos" class="nav-btn" onclick="mostrarSecao('produtos')">Produtos & Estoque</button>
-            <button class="nav-btn" disabled title="Disponível no Sprint 3">Frente de Caixa (Em breve)</button>
+            <button id="btn-pdv" class="nav-btn" onclick="mostrarSecao('pdv')">Frente de Caixa (PDV)</button>
+            <button id="btn-vendas" class="nav-btn" onclick="mostrarSecao('vendas')">Histórico de Vendas</button>
         </nav>
     </header>
 
@@ -44,7 +45,7 @@
             </table>
         </section>
 
-        <!-- SEÇÃO FORNECEDORES (SPRINT 2 - US04) -->
+        <!-- SEÇÃO FORNECEDORES (SPRINT 2) -->
         <section id="sec-fornecedores" class="card secao" style="display: none;">
             <h2>Gestão de Fornecedores</h2>
             <form id="form-fornecedor">
@@ -68,7 +69,7 @@
             </table>
         </section>
 
-        <!-- SEÇÃO PRODUTOS & ESTOQUE (SPRINT 2 - US05 & US06) -->
+        <!-- SEÇÃO PRODUTOS & ESTOQUE (SPRINT 2) -->
         <section id="sec-produtos" class="card secao" style="display: none;">
             <h2>Catálogo de Produtos e Controle de Estoque</h2>
             <form id="form-produto" class="form-grid">
@@ -99,6 +100,75 @@
                     </tr>
                 </thead>
                 <tbody id="tabela-produtos"></tbody>
+            </table>
+        </section>
+
+        <!-- SEÇÃO FRENTE DE CAIXA / PDV (SPRINT 3) -->
+        <section id="sec-pdv" class="card secao" style="display: none;">
+            <h2>Frente de Caixa (PDV)</h2>
+            <div class="pdv-adicionar">
+                <select id="pdv-produto">
+                    <option value="">Selecione um produto...</option>
+                </select>
+                <input type="number" id="pdv-qtd" min="1" value="1" placeholder="Qtd.">
+                <button type="button" class="btn-acao btn-entrada" onclick="adicionarItemCarrinho()">Adicionar ao Carrinho</button>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Qtd.</th>
+                        <th>Preço Unit.</th>
+                        <th>Subtotal</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-carrinho"></tbody>
+            </table>
+
+            <div class="pdv-footer">
+                <div class="pdv-pagamento">
+                    <label for="pdv-forma-pagamento">Forma de Pagamento:</label>
+                    <select id="pdv-forma-pagamento">
+                        <option value="PIX">PIX</option>
+                        <option value="DINHEIRO">Dinheiro</option>
+                        <option value="CARTAO_CREDITO">Cartão de Crédito</option>
+                        <option value="CARTAO_DEBITO">Cartão de Débito</option>
+                    </select>
+                </div>
+                <div class="pdv-total">
+                    Total: <strong>R$ <span id="pdv-total-valor">0.00</span></strong>
+                </div>
+                <button type="button" class="btn-finalizar" onclick="finalizarVenda()">Finalizar Venda</button>
+            </div>
+        </section>
+
+        <!-- SEÇÃO HISTÓRICO DE VENDAS & RESUMO (SPRINT 3) -->
+        <section id="sec-vendas" class="card secao" style="display: none;">
+            <h2>Histórico de Vendas e Resumo de Caixa</h2>
+            <div class="resumo-grid">
+                <div class="resumo-box">
+                    <span>Total de Vendas Realizadas</span>
+                    <strong id="resumo-qtd-vendas">0</strong>
+                </div>
+                <div class="resumo-box">
+                    <span>Faturamento Acumulado</span>
+                    <strong>R$ <span id="resumo-faturamento">0.00</span></strong>
+                </div>
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Data/Hora</th>
+                        <th>Itens</th>
+                        <th>Pagamento</th>
+                        <th>Valor Total</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-vendas"></tbody>
             </table>
         </section>
     </main>

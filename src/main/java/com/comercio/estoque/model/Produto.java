@@ -61,4 +61,14 @@ public class Produto extends EntidadeBase {
     public boolean isEstoqueBaixo() {
         return this.quantidadeEstoque <= this.estoqueMinimo;
     }
+
+    public void baixarEstoque(int quantidade) {
+        if (quantidade <= 0) {
+            throw new IllegalArgumentException("Quantidade deve ser maior que zero.");
+        }
+        if (quantidade > this.quantidadeEstoque) {
+            throw new IllegalArgumentException("Estoque insuficiente para o produto: " + this.nome);
+        }
+        this.quantidadeEstoque -= quantidade;
+    }
 }

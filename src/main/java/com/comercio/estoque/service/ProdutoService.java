@@ -44,6 +44,11 @@ public class ProdutoService {
         return repository.listarTodos();
     }
 
+    public Produto buscarPorId(Long id) {
+        return repository.buscarPorId(id)
+                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado."));
+    }
+
     public List<Produto> listarComEstoqueBaixo() {
         return repository.listarTodos().stream()
                 .filter(Produto::isEstoqueBaixo)
@@ -54,14 +59,17 @@ public class ProdutoService {
         if (quantidadeAdicional <= 0) {
             throw new IllegalArgumentException("A quantidade de entrada deve ser maior que zero.");
         }
-        Produto produto = repository.buscarPorId(id)
-                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado."));
+        Produto produto = buscarPorId(id);
         produto.setQuantidadeEstoque(produto.getQuantidadeEstoque() + quantidadeAdicional);
     }
 
+    public void baixarEstoqueParaVenda(Long id, int quantidade) {
+        Produto produto = buscarPorId(id);
+        produto.baixarEstoque(quantidade);
+    }
+
     public void inativar(Long id) {
-        Produto produto = repository.buscarPorId(id)
-                .orElseThrow(() -> new IllegalArgumentException("Produto não encontrado."));
+        Produto produto = buscarPorId(id);
         produto.setAtivo(false);
     }
 }
